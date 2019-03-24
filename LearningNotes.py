@@ -2,7 +2,7 @@ import argparse
 
 parser = argparse.ArgumentParser(description='"The Description of the Program."')	
 parser.add_argument('-n', '--number', help='The number of the plates in hano.',
-					type=int)
+					type=int,default=3)
 
 args = parser.parse_args()
 
@@ -279,4 +279,4 @@ def test13():
 	print('line2: ', line2)
 	
 if __name__ == '__main__':
-	test13()
+	test1(args.number)
