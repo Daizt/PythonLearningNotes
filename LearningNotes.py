@@ -47,8 +47,8 @@ def test2(n):
 				move(n-1,b,a,c)
 			return count
 		return move
-	result = hano2(n)()
-	print("{} plates, {} moves. ".format(n,result))
+	result = hano2(n)
+	print("{} plates, {} moves. ".format(n,result()))
 
 # 闭包：将子函数的算法、连同子函数计算过程中需要用到的父函数中的局部变量或参数打包在一起的算法与操作数集合。
 # 闭包详解：调用count()产生三个闭包，而三个闭包共用一个操作数i，故i作为闭包的内容被保留在内存中。在完成三个闭包时i的值
@@ -279,4 +279,4 @@ def test13():
 	print('line2: ', line2)
 	
 if __name__ == '__main__':
-	test1(args.number)
+	test2(args.number)
