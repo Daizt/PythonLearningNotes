@@ -24,9 +24,9 @@ def main():
 	# imgs = imgread(dataPath1,dataPath2)
 	
 	with open('mono10.bin','rb') as fp:
-		rows, columns = 2048, 2592
 		img = np.fromfile(fp, dtype=np.int16, count=-1)
-		
+
+	rows, columns = 2048, 2592
 	img.resize(rows, columns)
 	plt.imshow(img)
 	plt.show()
