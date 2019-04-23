@@ -254,7 +254,7 @@ def test13():
 		f.write(s)
 		f.write('123ending\n')
 		
-	with open(file, 'r') as f: # 只读模式，‘rb'表示按二进制方式读取
+	with open(file, 'r') as f: # 只读模式，‘rb'表示按bytes读取
 		print(f.tell()) # 输出读取位置
 		print(f.read(5)) # 从头读取5个字符
 		print(f.tell())
