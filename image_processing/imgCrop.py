@@ -15,10 +15,16 @@ def main():
 			"800us_1.tiff",
 			"800us_2.tiff",
 			"800us_3.tiff"]
+	files_2 = ["250us ({}).tiff".format(i) for i in range(1,11)]
+	files_2 += ["500us ({}).tiff".format(i) for i in range(1,13)]
+	files_2 += ["800us ({}).tiff".format(i) for i in range(1,7)]
 	currentPath = os.path.dirname(os.path.abspath(__file__))
-	dataPaths = [os.path.join(currentPath, 'raw_images', file) for file in files]
+	# dataPaths = [os.path.join(currentPath, 'raw_images', file) for file in files]
+	dataPaths = [os.path.join(currentPath, 'raw_images', file) for file in files_2]
 	
 	# read images in dataPaths and choose one channel of each image
+	# imgs = imgRead(*dataPaths, if_show=False)
+	# imgs = [img[:,:,0] for img in imgs]
 	imgs = imgRead(*dataPaths, if_show=False)
 	imgs = [img[:,:,0] for img in imgs]
 
@@ -29,18 +35,18 @@ def main():
 		img_cropped = imageCrop(img_cropped, half_size = 300)
 		img_cropped = imageCrop(img_cropped, half_size = 100)
 		
-		plt.imshow(img_cropped)
-		title = os.path.basename(dataPaths[i]).strip('.tiff') + '_cropped'
-		plt.title(title)
-		#plt.colorbar()
-		plt.axis('off')
-		plt.show()
+		# plt.imshow(img_cropped)
+		# title = os.path.basename(dataPaths[i]).strip('.tiff') + '_cropped'
+		# plt.title(title)
+		# #plt.colorbar()
+		# plt.axis('off')
+		# plt.show()
 		
 		# save cropped images
-		# filename = os.path.basename(dataPaths[i]).strip('.tiff') + '_cropped.tiff'
-		# # we use cmap 'gray' to save gray-scale images
-		# plt.imsave(os.path.join(currentPath, 'cropped_images', filename), img_cropped, cmap='gray')
-		# # print max error between original images and saved images
+		filename = os.path.basename(dataPaths[i]).strip('.tiff') + '_cropped.tiff'
+		# we use cmap 'gray' to save gray-scale images
+		plt.imsave(os.path.join(currentPath, 'cropped_images', filename), img_cropped, cmap='gray')
+		# print max error between original images and saved images
 		# img_saved = imgRead(os.path.join(currentPath, 'cropped_images', filename),if_show=False)[0][:,:,0]
 		# print(np.max(np.abs(img_saved-img_cropped)))
 		

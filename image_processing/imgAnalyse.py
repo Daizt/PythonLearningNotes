@@ -15,20 +15,39 @@ def main():
 			"800us_1_cropped.tiff",
 			"800us_2_cropped.tiff",
 			"800us_3_cropped.tiff"]
+	files_2 = ["250us ({})_cropped.tiff".format(i) for i in range(1,11)]
+	files_2 += ["500us ({})_cropped.tiff".format(i) for i in range(1,13)]
+	files_2 += ["800us ({})_cropped.tiff".format(i) for i in range(1,7)]
+	
 	currentPath = os.path.dirname(os.path.abspath(__file__))
 	dataPaths = [os.path.join(currentPath, 'cropped_images', file) for file in files]
+	dataPaths_2 = [os.path.join(currentPath, 'cropped_images', file) for file in files_2]
 
 	# read original images
 	imgs = imgRead(*dataPaths, if_show=False)
+	imgs_2 = imgRead(*dataPaths_2, if_show=False)
 	# choose one channel of each image
 	imgs = [img[:,:,0] for img in imgs]
+	imgs_2 = [img[:,:,0] for img in imgs_2]
 	
 	# images analysing
 	Ratios = np.array([imgAnalyse(img, luminosity=240) for img in imgs])
+	Ratios_2 = np.array([imgAnalyse(img, luminosity=254) for img in imgs_2])
 	
-	# show results
+	# show results of files
+	# fig, ax = plt.subplots()
+	# ax.plot(Ratios, 'bx-', linewidth=1.2)
+	# ax.set_title('Variance Ratios of different images')
+	# ax.set_xlabel('The Number of Image')
+	# ax.set_ylabel('Ratios')
+	# ax.axis('equal')
+	# ax.grid(True)
+	# plt.show()
+	
+	# show results of files_2
+	imgAnalyse(imgs_2[5], if_show=True)
 	fig, ax = plt.subplots()
-	ax.plot(Ratios, 'bx-', linewidth=1.2)
+	ax.plot(Ratios_2, 'bx-', linewidth=1.2)
 	ax.set_title('Variance Ratios of different images')
 	ax.set_xlabel('The Number of Image')
 	ax.set_ylabel('Ratios')
@@ -36,7 +55,6 @@ def main():
 	ax.grid(True)
 	plt.show()
 	
-	# print(imgAnalyse(imgs[1],if_show=True))
 		
 
 
