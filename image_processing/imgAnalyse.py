@@ -1,10 +1,14 @@
 import numpy as np
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+import matplotlib.style as mpstyle
 from imgRead import imgRead
 import os
 
 def main():
+	# figure style configuration
+	# mpstyle.use('ggplot')
+
 	# get paths
 	files = ["250us_1_cropped.tiff",
 			"250us_2_cropped.tiff",
@@ -51,7 +55,7 @@ def main():
 	ax.set_title('Variance Ratios of different images')
 	ax.set_xlabel('The Number of Image')
 	ax.set_ylabel('Ratios')
-	ax.axis('equal')
+	# ax.axis('equal')
 	ax.grid(True)
 	plt.show()
 	

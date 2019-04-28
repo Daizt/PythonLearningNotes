@@ -278,5 +278,38 @@ def test13():
 	print('line1: ', line1)
 	print('line2: ', line2)
 	
+# 又一个闭包例子：
+#     当父函数接收的参数为“可变对象”时，返回的闭包中保存的是该可变对象的
+# 一种访问方式，而并不是一个重新创建的对象！因此改变外部变量时，也会对该
+# 闭包产生影响。如果想让闭包不受外部影响，只需要在闭包内部再创建一个内部
+# 变量即可。
+# 
+# 再议可变对象与不可变对象：
+#     Python中的可变对象有：list，dict，set；不可变对象有：str，num，tuple。
+# 可变对象在赋值给变量的时候是“惰性”的，即只赋给变量一个对于原对象的访问方
+# 式（view），而并没有创建一个新的对象；不可变对象的赋值则是直接创建一个新的
+# 对象，再将其访问方式赋给变量。
+def test14():
+	import numpy as np
+
+	# 可变对象a
+	a = np.ones(5)
+
+	# 该闭包保存了a的访问方式
+	def Q(a):
+		# 在内部创建变量可以避免闭包的行为受到外部影响
+		# a = a.copy()
+		def f(ith):
+			res = a.copy()
+			res[ith] += 1
+			return res
+		return f
+
+	f = Q(a)
+	print("a = {}, f(1) = {}".format(a, f(1)))
+	# 改变a时，闭包的输出结果相应变化
+	a += 1
+	print("a = {}, f(1) = {}".format(a, f(1)))
+	
 if __name__ == '__main__':
-	test2(args.number)
+	test14()

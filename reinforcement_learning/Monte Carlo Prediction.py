@@ -59,12 +59,13 @@ def mc_prediction(policy, env, num_episodes, discount_factor=1.0):
 			# record the trajectory
 			episode.append((state, action, reward))
 			if done:
+				# print(episode[-1])
 				break 
 			state = next_state
 			
 			
 		# Find all the states we've visited in this episode
-		states_in_episode = set([tuple(x[0]) for x in episode])
+		states_in_episode = set([x[0] for x in episode])
 		for state in states_in_episode:
 			# find the first occurrence of the state in the episode
 			first_occurrence_idx = next((ith for ith, observation in enumerate(episode) if observation[0] == state))
