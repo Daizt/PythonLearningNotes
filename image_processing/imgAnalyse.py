@@ -3,63 +3,43 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import matplotlib.style as mpstyle
 from imgRead import imgRead
-import os
+import os,argparse
 
 def main():
-	# figure style configuration
-	# mpstyle.use('ggplot')
-
-	# get paths
-	files = ["250us_1_cropped.tiff",
-			"250us_2_cropped.tiff",
-			"250us_3_cropped.tiff",
-			"500us_1_cropped.tiff",
-			"500us_2_cropped.tiff",
-			"500us_3_cropped.tiff",
-			"800us_1_cropped.tiff",
-			"800us_2_cropped.tiff",
-			"800us_3_cropped.tiff"]
-	files_2 = ["250us ({})_cropped.tiff".format(i) for i in range(1,11)]
-	files_2 += ["500us ({})_cropped.tiff".format(i) for i in range(1,13)]
-	files_2 += ["800us ({})_cropped.tiff".format(i) for i in range(1,7)]
+	parser = argparse.ArgumentParser(description = "This program completes following jobs:\n1.Read cropped images that contain ellipse light spot.\n2.Perform PCA on cropped images and find the principle directions.\n3.Calculate length ratio of major aixs of each ellipse in the cropped images.\n")							
+	parser.add_argument('-p', '--path', help="The path of cropped images.")
+	parser.add_argument('-l', '--luminosity', help="Luminosity threshold. (DEFAULT: 250)", default=250, type=int)
+	args = parser.parse_args()
+	
 	
 	currentPath = os.path.dirname(os.path.abspath(__file__))
-	dataPaths = [os.path.join(currentPath, 'cropped_images', file) for file in files]
-	dataPaths_2 = [os.path.join(currentPath, 'cropped_images', file) for file in files_2]
-
-	# read original images
-	imgs = imgRead(*dataPaths, if_show=False)
-	imgs_2 = imgRead(*dataPaths_2, if_show=False)
+	imagePath = os.path.join(currentPath, args.path)
+	imagePaths = [os.path.join(imagePath, x) for x in os.listdir(imagePath) if os.path.splitext(x)[1]=='.tiff']
+	
+	# read cropped images
+	imgs = imgRead(*imagePaths, if_show=False)
 	# choose one channel of each image
-	imgs = [img[:,:,0] for img in imgs]
-	imgs_2 = [img[:,:,0] for img in imgs_2]
+	imgs = [img[:,:,0] if len(img.shape)==3 else img for img in imgs]
+
 	
 	# images analysing
-	Ratios = np.array([imgAnalyse(img, luminosity=240) for img in imgs])
-	Ratios_2 = np.array([imgAnalyse(img, luminosity=254) for img in imgs_2])
+	ratios = np.array([imgAnalyse(img, luminosity=args.luminosity) for img in imgs])
 	
-	# show results of files
-	# fig, ax = plt.subplots()
-	# ax.plot(Ratios, 'bx-', linewidth=1.2)
-	# ax.set_title('Variance Ratios of different images')
-	# ax.set_xlabel('The Number of Image')
-	# ax.set_ylabel('Ratios')
-	# ax.axis('equal')
-	# ax.grid(True)
-	# plt.show()
-	
-	# show results of files_2
-	imgAnalyse(imgs_2[5], if_show=True)
+	# show results 
 	fig, ax = plt.subplots()
-	ax.plot(Ratios_2, 'bx-', linewidth=1.2)
+	ax.plot(ratios, 'bx-', linewidth=1.2)
 	ax.set_title('Variance Ratios of different images')
 	ax.set_xlabel('The Number of Image')
 	ax.set_ylabel('Ratios')
-	# ax.axis('equal')
 	ax.grid(True)
 	plt.show()
 	
-		
+	# write results to file
+	filePath = os.path.join(currentPath, 'ratios.txt')
+	with open(filePath, 'w') as fp:
+		for x in ratios:
+			fp.write(str(x)+'\n')
+	print("Results saved!")
 
 
 def imgAnalyse(img, luminosity=250, if_show=False):

@@ -2,54 +2,67 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
 from imgRead import imgRead
-import os
+import os,argparse,linecache
 
 def main():
-	# set filenames and paths
-	files = ["250us_1.tiff",
-			"250us_2.tiff",
-			"250us_3.tiff",
-			"500us_1.tiff",
-			"500us_2.tiff",
-			"500us_3.tiff",
-			"800us_1.tiff",
-			"800us_2.tiff",
-			"800us_3.tiff"]
-	files_2 = ["250us ({}).tiff".format(i) for i in range(1,11)]
-	files_2 += ["500us ({}).tiff".format(i) for i in range(1,13)]
-	files_2 += ["800us ({}).tiff".format(i) for i in range(1,7)]
-	currentPath = os.path.dirname(os.path.abspath(__file__))
-	# dataPaths = [os.path.join(currentPath, 'raw_images', file) for file in files]
-	dataPaths = [os.path.join(currentPath, 'raw_images', file) for file in files_2]
+	parser = argparse.ArgumentParser(description="This program takes in path of original images (p0) and crops them into 200*200 images containing ellipse on the center, then saves cropped images in given directory (p1).\n")
 	
-	# read images in dataPaths and choose one channel of each image
-	# imgs = imgRead(*dataPaths, if_show=False)
-	# imgs = [img[:,:,0] for img in imgs]
-	imgs = imgRead(*dataPaths, if_show=False)
-	imgs = [img[:,:,0] for img in imgs]
+	parser.add_argument('-p0', '--path0', help="Path of original images.")
+	parser.add_argument('-p1', '--path1', help="Path of cropped images to be saved.(DEFAULT: cropped_images)", default='cropped_images')
+	parser.add_argument('-f', '--filename', help="Filename of an original image on current directory.")
+	
+	args = parser.parse_args()
 
+	currentDir = os.path.split(os.path.abspath(__file__))[0]
+	
+	if args.path0:
+		imageDir = os.path.join(currentDir, args.path0)
+		imagePaths = [os.path.join(imageDir, x) for x in os.listdir(imageDir) if os.path.splitext(x)[1] == '.tiff']
+		# read images in dataPaths and choose one channel of each image
+		imgs = imgRead(*imagePaths, if_show=False)
+		# choose one channel 
+		imgs = [img[:,:,0] if len(img.shape)==3 else img for img in imgs]
 
 	# we may need different half sizes to find the right area when exposure time is large.
-	for i in range(len(imgs)):
-		img_cropped = imageCrop(imgs[i], half_size = 500)
+		for i in range(len(imgs)):
+			img_cropped = imageCrop(imgs[i], half_size = 500)
+			img_cropped = imageCrop(img_cropped, half_size = 300)
+			img_cropped = imageCrop(img_cropped, half_size = 100)
+			
+			# save cropped images
+			filename = os.path.split(imagePaths[i])[1].split('.')[0] + '_cropped.tiff'
+			# we use cmap 'gray' to save gray-scale images
+			plt.imsave(os.path.join(currentDir, args.path1, filename), img_cropped, cmap='gray')
+			# print max error between original images and saved images
+			img_saved = imgRead(os.path.join(currentDir, args.path1, filename),if_show=False)[0][:,:,0]
+			print("Max error between original array and saved image: ", np.max(np.abs(img_saved-img_cropped)))
+		print("Images cropping finished!")
+			
+	if args.filename:
+		imagePath = os.path.join(currentDir, args.filename)
+		# read images in dataPaths and choose one channel of each image
+		img = imgRead(imagePath, if_show=False)[0]
+		# choose one channel
+		if len(img.shape) == 3:
+			img = img[:,:,0]
+
+	# we may need different half sizes to find the right area when exposure time is large.
+		img_cropped = imageCrop(img, half_size = 500)
 		img_cropped = imageCrop(img_cropped, half_size = 300)
 		img_cropped = imageCrop(img_cropped, half_size = 100)
 		
-		# plt.imshow(img_cropped)
-		# title = os.path.basename(dataPaths[i]).strip('.tiff') + '_cropped'
-		# plt.title(title)
-		# #plt.colorbar()
-		# plt.axis('off')
-		# plt.show()
-		
 		# save cropped images
-		filename = os.path.basename(dataPaths[i]).strip('.tiff') + '_cropped.tiff'
+		filename = args.filename.split('.')[0] + '_cropped.tiff'
 		# we use cmap 'gray' to save gray-scale images
-		plt.imsave(os.path.join(currentPath, 'cropped_images', filename), img_cropped, cmap='gray')
+		plt.imsave(os.path.join(currentDir, filename), img_cropped, cmap='gray')
 		# print max error between original images and saved images
-		# img_saved = imgRead(os.path.join(currentPath, 'cropped_images', filename),if_show=False)[0][:,:,0]
-		# print(np.max(np.abs(img_saved-img_cropped)))
+		img_saved = imgRead(os.path.join(currentDir, filename),if_show=False)[0][:,:,0]
+		print("Max error between original array and saved image: ", np.max(np.abs(img_saved-img_cropped)))
 		
+		print("Image cropping finished!")
+	
+	if args.filename==None and args.path0==None:
+		print("No image cropped!")
 
 def imageCrop(img, luminousity = 254, half_size=100, delta=10):
 	'''

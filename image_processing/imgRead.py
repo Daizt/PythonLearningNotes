@@ -1,23 +1,30 @@
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
-import os
+import os, argparse
 
 def main():
+	parser = argparse.ArgumentParser(description="This program reads and shows an image.")
+	
+	parser.add_argument('--bit', choices=[8,10], help="Bit depth of given image.(DEFAULT: 8)", type=int, default=8)
+	parser.add_argument('--rows', type=int, default=2048, help="Row number of given image.(DEFAULT: 2048)")
+	parser.add_argument('--cols', type=int, default=2592, help="Columns number of given image.(DEFAULT: 2592)")
+	parser.add_argument('img', help="Image to be read.")
+
+	args = parser.parse_args()
+	
 	# get current file path
-	path = os.path.dirname(os.path.abspath(__file__))
+	currentPath = os.path.dirname(os.path.abspath(__file__))
 
 	# read 8-bit images
-	file1 = 'mono8.tiff'
-	file2 = 'mono10.tiff'
-	dataPath1 = os.path.join(path, 'raw_images', file1)
-	dataPath2 = os.path.join(path, 'raw_images', file2)
-	imgs = imgRead(dataPath1,dataPath2)
+	if args.bit == 8:
+		dataPath = os.path.join(currentPath, args.img)
+		img = imgRead(dataPath)[0]
 	
 	# read 10-bit raw image
-	file3 = 'mono10.bin'
-	dataPath3 = os.path.join(path, 'raw_images', file3)
-	imgs = imgReadBin(dataPath3)
+	if args.bit == 10:
+		dataPath = os.path.join(currentPath,args.img)
+		img = imgReadBin(dataPath, rows=args.rows, columns=args.cols)
 
 def imgRead(*dataPath,if_show=True):
 	imgs = []

@@ -311,5 +311,45 @@ def test14():
 	a += 1
 	print("a = {}, f(1) = {}".format(a, f(1)))
 	
+# 路径操作
+def test15():
+	import os
+	
+	# 当前工作目录，即python的启动目录
+	cwd = os.getcwd()
+	workingDir = os.path.abspath('.')
+	print(cwd)
+	print(workingDir)
+	
+	# 当前.py文件的目录
+	# os.path.split()总是将给定路径的末尾路径（或文件名）与之前路径分开并返回tuple
+	fileDir = os.path.split(os.path.abspath(__file__))[0]
+	print(os.path.abspath(__file__))
+	print(fileDir)
+	
+	# 创建/删除目录
+	os.mkdir(os.path.join(cwd, 'testdir'))
+	os.rmdir(os.path.join(cwd, 'testdir'))
+	
+	# 列出当前路径下的路径和文件
+	print(os.listdir(fileDir))
+	
+	# 列出当前工作目录下的路径
+	# os.isdir()判断是否为路径
+	print([x for x in os.listdir('.') if os.path.isdir(x)])
+	
+	# 列出当前工作目录下的.txt文件
+	# os.isfile()判断是否为文件，os.path.splitext()将路径末尾的后缀与前面部分分离并返回tuple
+	print([x for x in os.listdir('.') if os.path.isfile(x) and os.path.splitext(x)[1]=='.txt'])
+	
+# Some tricks
+def tricks():
+	a = list(range(10))
+	b = [x for x in a if x%2==0]
+	c = [x if x%2==0 else -1*x for x in a]
+	print(a)
+	print(b)
+	print(c)
+
 if __name__ == '__main__':
-	test14()
+	tricks()
