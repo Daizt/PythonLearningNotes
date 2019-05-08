@@ -28,7 +28,7 @@ def main():
 	# show one of the PCA results
 	if args.show:
 		idx = np.random.choice(len(imgs))
-		imgAnalyse(imgs[idx], if_show=True)
+		imgAnalyse(imgs[idx], luminosity=args.luminosity, if_show=True)
 	
 	# show results 
 	fig, ax = plt.subplots()
