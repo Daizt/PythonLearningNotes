@@ -9,6 +9,7 @@ def main():
 	parser = argparse.ArgumentParser(description = "This program completes following jobs:\n1.Read cropped images that contain ellipse light spot.\n2.Perform PCA on cropped images and find the principle directions.\n3.Calculate length ratio of major aixs of each ellipse in the cropped images.\n")							
 	parser.add_argument('-p', '--path', help="The path of cropped images.")
 	parser.add_argument('-l', '--luminosity', help="Luminosity threshold. (DEFAULT: 250)", default=250, type=int)
+	parser.add_argument('--show', action='store_true', help="Show flag to determine whether to show PCA result.")
 	args = parser.parse_args()
 	
 	
@@ -24,6 +25,10 @@ def main():
 	
 	# images analysing
 	ratios = np.array([imgAnalyse(img, luminosity=args.luminosity) for img in imgs])
+	# show one of the PCA results
+	if args.show:
+		idx = np.random.choice(len(imgs))
+		imgAnalyse(imgs[idx], if_show=True)
 	
 	# show results 
 	fig, ax = plt.subplots()
@@ -32,6 +37,7 @@ def main():
 	ax.set_xlabel('The Number of Image')
 	ax.set_ylabel('Ratios')
 	ax.grid(True)
+	plt.savefig('result')
 	plt.show()
 	
 	# write results to file
@@ -69,7 +75,19 @@ def imgAnalyse(img, luminosity=250, if_show=False):
 	# project all x in X to the principle directions
 	X_proj = U.T.dot(X)
 	
+	
+	# sort all x and y, so we can get variance ratio
+	X_sorted = np.sort(X_proj, axis=1)
+	# how many points we use to compute lengths of major axis
+	point_num = int(len(X_sorted[0])*0.01)
+	if point_num < 10:
+		point_num = 10
+	a = np.sum(np.abs(X_sorted[0][0:point_num])+np.abs(X_sorted[0][-1-point_num:-1]))/(2*point_num)
+	b = np.sum(np.abs(X_sorted[1][0:point_num])+np.abs(X_sorted[1][-1-point_num:-1]))/(2*point_num)
+	variance_ratio = a/b
+	
 	if if_show:
+		print("Points selected/total: {}/{}".format(point_num, len(X_sorted[0])))
 		# show the priciple directions
 		fig, ax = plt.subplots()
 		ax.imshow(img, cmap='gray')
@@ -81,15 +99,11 @@ def imgAnalyse(img, luminosity=250, if_show=False):
 
 		fig2, ax2 = plt.subplots()
 		ax2.plot(X_proj[0], X_proj[1], 'bx', markersize=2.5)
+		ax2.plot([-a, a], [0, 0], 'r--', linewidth=1.5)
+		ax2.plot([0, 0], [-b, b], 'r--', linewidth=1.5)
 		ax2.axis('equal')
 		#ax2.axis([-30,30,-40,40])
 		plt.show()
-	
-	# sort all x and y, so we can get variance ratio
-	X_sorted = np.sort(X_proj, axis=1)
-	a = np.sum(np.abs(X_sorted[0][0:5])+np.abs(X_sorted[0][-6:-1]))/10
-	b = np.sum(np.abs(X_sorted[1][0:5])+np.abs(X_sorted[1][-6:-1]))/10
-	variance_ratio = a/b
 
 	return variance_ratio
 	

@@ -14,6 +14,12 @@ def main():
 	args = parser.parse_args()
 
 	currentDir = os.path.split(os.path.abspath(__file__))[0]
+	destDir = os.path.join(currentDir, args.path1)
+	try:
+		os.mkdir(destDir)
+		print("Directory made!")
+	except:
+		print("Directory already exists!")
 	
 	if args.path0:
 		imageDir = os.path.join(currentDir, args.path0)
