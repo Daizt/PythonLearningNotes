@@ -95,6 +95,6 @@ ENV/
 .ipynb_checkpoints/
 
 # My configurations
-image_processing/raw_images
-image_processing/cropped_images
+raw_images/
+cropped_images/
 
