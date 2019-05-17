@@ -17,5 +17,12 @@ def main():
 	imageio.mimsave(os.path.join(currentPath, 'output.gif'), images, duration=args.duration)
 	print("Done!")
 	
+	## Another way
+	# with imageio.get_writer(os.path.join(currentPath, 'output.gif'), mode='I') as writer:
+		# for filename in fileNames:
+			# image = imageio.imread(filename)
+			# writer.append_data(image)
+	# print("Done!")
+
 if __name__ == "__main__":
 	main()
