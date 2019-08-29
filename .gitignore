@@ -97,4 +97,7 @@ ENV/
 # My configurations
 raw_images/
 cropped_images/
+*.sublime-workspace
+pytorch_space/
+
 

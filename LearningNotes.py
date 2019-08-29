@@ -127,7 +127,7 @@ def test7():
 				for i in range(1,n-1):
 					l_2[i] = l_1[i-1] + l_1[i]
 				yield l_2
-				l_1 = l_2
+				
 			n += 1
 	n = 0
 	results = []
@@ -352,4 +352,4 @@ def tricks():
 	print(c)
 
 if __name__ == '__main__':
-	tricks()
+	test9()
